@@ -9,4 +9,10 @@ router.get("/:id", authenticateToken, PermissionController.getById);
 router.post("/", authenticateToken, PermissionController.create);
 router.delete("/:id", authenticateToken, PermissionController.delete);
 
+router.put(
+  "/status/:id/",
+  authenticateToken,
+  PermissionController.updateStatus
+);
+
 export default router;

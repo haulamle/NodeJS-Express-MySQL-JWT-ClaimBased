@@ -51,6 +51,7 @@ export const checkPermission = async (
       ],
       where: {
         roleId: roleIds,
+        status: true,
       },
     });
 

@@ -28,7 +28,7 @@ export class RoleController {
       const roles = await Role.findAll();
       res.status(200).json({
         message: "Roles retrieved successfully",
-        roles,
+        data: roles,
       });
     } catch (error) {
       console.error("Get all roles error:", error);

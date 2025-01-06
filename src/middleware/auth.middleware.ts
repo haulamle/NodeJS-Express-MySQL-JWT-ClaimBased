@@ -36,7 +36,6 @@ export const authenticateToken = async (
       token,
       process.env.JWT_SECRET as string
     ) as JWTPayload;
-
     const user = await User.findOne({
       where: { id: decoded.id },
       include: [
@@ -49,7 +48,7 @@ export const authenticateToken = async (
 
     if (!user) {
       return res.status(401).json({
-        error: "User not found",
+        error: "User not found!!!!",
       });
     }
     req.user = user;

@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { sequelize } from "./src/config/database.config";
 import routes from "./src/routers";
+import { seedPermissions } from "./src/utils/seeds/permissions";
 
 dotenv.config();
 
@@ -21,6 +22,10 @@ const startServer = async () => {
     console.log("Database connection established");
     // chạy một lần để reset database : await sequelize.sync({ force: true });
     await sequelize.sync({ alter: true });
+
+    // Seed permissions after database sync
+    await seedPermissions();
+
     console.log("Database synchronized");
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

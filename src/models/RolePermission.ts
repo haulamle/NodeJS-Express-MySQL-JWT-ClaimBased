@@ -35,6 +35,13 @@ export class RolePermission extends Model {
   })
   declare permissionId: string;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  })
+  declare status: boolean;
+
   @BelongsTo(() => Role)
   declare role: Role;
 

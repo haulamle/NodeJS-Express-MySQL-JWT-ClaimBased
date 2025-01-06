@@ -16,4 +16,9 @@ export const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   logging: false,
   models: [User, Role, Permission, RolePermission, UserRole],
+  define: {
+    timestamps: false, // Tắt timestamps để giảm columns
+    freezeTableName: true,
+    underscored: true,
+  },
 });

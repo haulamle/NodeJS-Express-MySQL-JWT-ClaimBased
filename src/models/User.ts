@@ -27,6 +27,13 @@ export class User extends Model {
   })
   declare password: string;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  })
+  declare status: boolean;
+
   @HasMany(() => UserRole)
   declare userRoles: UserRole[];
 }

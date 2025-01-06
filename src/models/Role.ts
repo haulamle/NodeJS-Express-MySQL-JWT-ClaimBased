@@ -31,6 +31,7 @@ export class Role extends Model {
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
+    defaultValue: true,
   })
   declare status: boolean;
 

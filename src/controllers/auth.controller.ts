@@ -67,11 +67,13 @@ export class AuthController {
 
       res.json({
         message: "Login successful",
-        token,
-        user: {
-          id: user.id,
-          username: user.username,
-          roles: user.userRoles.map((x) => x.role),
+        data: {
+          token,
+          user: {
+            id: user.id,
+            username: user.username,
+            roles: user.userRoles.map((x) => x.role),
+          },
         },
       });
     } catch (error) {

@@ -20,7 +20,6 @@ export class RolePermissionController {
         return;
       }
 
-      // Kiểm tra xem đã tồn tại role-permission này chưa
       const existingRolePermission = await RolePermission.findOne({
         where: {
           roleId,
@@ -29,19 +28,34 @@ export class RolePermissionController {
       });
 
       if (existingRolePermission) {
-        res.status(400).json({ error: "Role permission already exists" });
+        res.status(400).json({
+          error: "This permission is already assigned to this role",
+        });
         return;
       }
-
-      // Tạo role-permission mới
       const rolePermission = await RolePermission.create({
         roleId,
         permissionId,
+        status: true,
+      });
+
+      const detailedRolePermission = await RolePermission.findOne({
+        where: { id: rolePermission.id },
+        include: [
+          {
+            model: Role,
+            attributes: ["id", "name"],
+          },
+          {
+            model: Permission,
+            attributes: ["id", "action", "apiEndpoint", "apiMethod"],
+          },
+        ],
       });
 
       res.status(201).json({
         message: "Role permission created successfully",
-        rolePermission,
+        data: detailedRolePermission,
       });
     } catch (error) {
       console.error("Create role permission error:", error);
@@ -69,6 +83,12 @@ export class RolePermissionController {
 
   public static async getAll(req: Request, res: Response): Promise<void> {
     try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const offset = (page - 1) * limit;
+
+      const total = await RolePermission.count();
+
       const rolePermissions = await RolePermission.findAll({
         include: [
           {
@@ -80,11 +100,14 @@ export class RolePermissionController {
             attributes: ["id", "action", "apiEndpoint", "apiMethod"],
           },
         ],
+        limit,
+        offset,
+        order: [["createdAt", "DESC"]],
       });
 
       res.status(200).json({
         message: "Role permissions retrieved successfully",
-        rolePermissions,
+        data: rolePermissions,
       });
     } catch (error) {
       console.error("Get role permissions error:", error);
