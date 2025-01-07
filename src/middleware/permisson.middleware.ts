@@ -3,6 +3,12 @@ import { RolePermission } from "../models/RolePermission";
 import { Permission } from "../models/Permission";
 import { UserRole } from "../models/UserRole";
 import url from "url";
+
+// Hàm chuyển đổi URL thực tế thành URL pattern
+const convertToUrlPattern = (url: string): string => {
+  // Thay thế các UUID trong URL bằng :id
+  return url.replace(/\/[0-9a-fA-F-]{36}/, "/:id");
+};
 export const checkPermission = async (
   req: Request,
   res: Response,
@@ -18,9 +24,11 @@ export const checkPermission = async (
 
     console.log("Checking permissions for user:", req.user.id);
     console.log("Request full path:", url.parse(req.originalUrl).pathname);
-    // console.log("Request path:", req.path);
     console.log("Request method:", req.method.toLowerCase());
 
+    const currentUrlPattern = convertToUrlPattern(
+      url.parse(req.originalUrl).pathname as string
+    );
     const userRoles = await UserRole.findAll({
       where: { userId: req.user.id },
     });
@@ -44,7 +52,7 @@ export const checkPermission = async (
         {
           model: Permission,
           where: {
-            apiEndpoint: url.parse(req.originalUrl).pathname,
+            apiEndpoint: currentUrlPattern,
             apiMethod: req.method.toLowerCase(),
           },
         },

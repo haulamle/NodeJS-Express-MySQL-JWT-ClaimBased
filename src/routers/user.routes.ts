@@ -21,17 +21,24 @@ router.get(
 );
 
 router.put(
-  "/update",
+  "/:id",
   authenticateToken,
   checkPermission, // Kiểm tra permission update user
   UserController.update
 );
 
 router.delete(
-  "/delete",
+  "/:id",
   authenticateToken,
   checkPermission, // Kiểm tra permission delete user
   UserController.delete
+);
+
+router.put(
+  "/status/:id",
+  authenticateToken,
+  checkPermission,
+  UserController.updateStatus
 );
 
 export default router;

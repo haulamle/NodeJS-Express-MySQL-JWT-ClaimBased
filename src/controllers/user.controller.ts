@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/User";
 import { UserRole } from "../models/UserRole";
 import bcrypt from "bcrypt";
+import { Role } from "../models/Role";
 
 export class UserController {
   public static async create(req: Request, res: Response): Promise<void> {
@@ -50,12 +51,22 @@ export class UserController {
   public static async getAll(req: Request, res: Response): Promise<void> {
     try {
       const users = await User.findAll({
-        include: [UserRole],
+        include: [
+          {
+            model: UserRole,
+            include: [
+              {
+                model: Role,
+                attributes: ["id", "name"],
+              },
+            ],
+          },
+        ],
         attributes: { exclude: ["password"] }, // Không trả về password
       });
       res.status(200).json({
         message: "Users retrieved successfully",
-        users,
+        data: users,
       });
     } catch (error) {
       console.error("Get users error:", error);
@@ -66,7 +77,7 @@ export class UserController {
   public static async update(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const { username, password, roleIds } = req.body;
+      const { username, roleIds } = req.body;
 
       const user = await User.findByPk(id);
       if (!user) {
@@ -76,27 +87,36 @@ export class UserController {
 
       if (username) {
         user.username = username;
+        await user.save();
       }
-      if (password) {
-        user.password = await bcrypt.hash(password, 10);
-      }
-      await user.save();
 
-      if (roleIds && Array.isArray(roleIds)) {
-        await UserRole.destroy({ where: { userId: id } });
+      if (roleIds) {
+        await UserRole.destroy({
+          where: { userId: id },
+        });
 
-        await Promise.all(
-          roleIds.map((roleId) =>
-            UserRole.create({
+        if (roleIds.length > 0) {
+          await UserRole.bulkCreate(
+            roleIds.map((roleId: string) => ({
               userId: id,
               roleId,
-            })
-          )
-        );
+            }))
+          );
+        }
       }
 
-      const updatedUser = await User.findByPk(id as string, {
-        include: [UserRole],
+      const updatedUser = await User.findByPk(id, {
+        include: [
+          {
+            model: UserRole,
+            include: [
+              {
+                model: Role,
+                attributes: ["id", "name"],
+              },
+            ],
+          },
+        ],
         attributes: { exclude: ["password"] },
       });
 
@@ -150,6 +170,30 @@ export class UserController {
       });
     } catch (error) {
       console.error("Get user error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  public static async updateStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const user = await User.findByPk(id);
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      user.status = status;
+      await user.save();
+
+      res.status(200).json({
+        message: "User status updated successfully",
+        data: user,
+      });
+    } catch (error) {
+      console.error("Update user status error:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   }

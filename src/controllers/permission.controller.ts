@@ -118,48 +118,35 @@ export class PermissionController {
 
   public static async updateStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params; // permissionId
-      const { status, roleId } = req.body;
+      const { id } = req.params;
+      const { status } = req.body;
 
-      // Tìm role_permission dựa trên permissionId và roleId
-      const rolePermission = await RolePermission.findOne({
-        where: {
-          permissionId: id,
-          roleId: roleId,
-        },
-      });
+      const rolePermission = await RolePermission.findByPk(id);
 
       if (!rolePermission) {
-        res.status(404).json({ error: "Permission not found for this role" });
+        res.status(404).json({ error: "Role permission not found" });
         return;
       }
 
-      // Update status
       await rolePermission.update({ status });
 
-      const permission = await Permission.findOne({
+      const updatedRolePermission = await RolePermission.findOne({
         where: { id },
         include: [
           {
-            model: RolePermission,
-            where: {
-              roleId: roleId,
-            },
-            attributes: ["status"],
-            required: false,
+            model: Permission,
+            attributes: ["id", "action", "apiEndpoint", "apiMethod"],
+          },
+          {
+            model: Role,
+            attributes: ["id", "name"],
           },
         ],
       });
 
-      const plainPermission = permission?.get({ plain: true });
-      const { rolePermissions, ...rest } = plainPermission;
-
       res.status(200).json({
         message: "Status updated successfully",
-        data: {
-          ...rest,
-          status: rolePermissions?.[0]?.status ?? false,
-        },
+        data: updatedRolePermission,
       });
     } catch (error) {
       console.error("Update status error:", error);

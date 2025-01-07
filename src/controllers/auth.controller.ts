@@ -53,6 +53,15 @@ export class AuthController {
         return;
       }
 
+      if (!user.status) {
+        res.status(403).json({
+          error: "Account is locked",
+          message:
+            "Your account has been disabled. Please contact administrator.",
+        });
+        return;
+      }
+
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
         res.status(401).json({ error: "Invalid credentials" });

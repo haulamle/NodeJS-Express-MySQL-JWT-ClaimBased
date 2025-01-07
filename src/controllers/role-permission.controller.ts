@@ -83,12 +83,6 @@ export class RolePermissionController {
 
   public static async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const offset = (page - 1) * limit;
-
-      const total = await RolePermission.count();
-
       const rolePermissions = await RolePermission.findAll({
         include: [
           {
@@ -100,8 +94,6 @@ export class RolePermissionController {
             attributes: ["id", "action", "apiEndpoint", "apiMethod"],
           },
         ],
-        limit,
-        offset,
         order: [["createdAt", "DESC"]],
       });
 
