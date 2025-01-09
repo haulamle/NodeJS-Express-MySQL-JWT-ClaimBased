@@ -4,8 +4,9 @@ import { authenticateToken } from "../middleware/auth.middleware";
 
 const router = Router();
 
-router.post("/", authenticateToken, UserRoleController.create);
-router.delete("/:id", authenticateToken, UserRoleController.delete);
-router.get("/", authenticateToken, UserRoleController.getAll);
+router.use(authenticateToken);
+router.post("/", UserRoleController.create);
+router.delete("/:id", UserRoleController.delete);
+router.get("/", UserRoleController.getAll);
 
 export default router;

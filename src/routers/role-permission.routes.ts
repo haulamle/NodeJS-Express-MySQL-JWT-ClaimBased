@@ -4,8 +4,10 @@ import { RolePermissionController } from "../controllers/role-permission.control
 
 const router = Router();
 
-router.post("/", authenticateToken, RolePermissionController.create);
-router.delete("/:id", authenticateToken, RolePermissionController.delete);
-router.get("/", authenticateToken, RolePermissionController.getAll);
+router.use(authenticateToken);
+
+router.post("/", RolePermissionController.create);
+router.delete("/:id", RolePermissionController.delete);
+router.get("/", RolePermissionController.getAll);
 
 export default router;

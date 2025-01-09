@@ -3,11 +3,12 @@ import { RoleController } from "../controllers/role.controller";
 import { authenticateToken } from "../middleware/auth.middleware";
 const router = Router();
 
-// router.use(authenticateToken);
+router.use(authenticateToken);
 
-router.post("/", authenticateToken, RoleController.create);
-router.get("/", authenticateToken, RoleController.getAll);
-router.get("/:id", authenticateToken, RoleController.getById);
-router.delete("/:id", authenticateToken, RoleController.delete);
+router.post("/", RoleController.create);
+router.get("/", RoleController.getAll);
+router.get("/:id", RoleController.getById);
+router.delete("/:id", RoleController.delete);
+router.put("/status/:id", RoleController.updateStatus);
 
 export default router;

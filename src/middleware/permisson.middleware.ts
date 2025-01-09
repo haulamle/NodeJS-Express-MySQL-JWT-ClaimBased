@@ -4,9 +4,7 @@ import { Permission } from "../models/Permission";
 import { UserRole } from "../models/UserRole";
 import url from "url";
 
-// Hàm chuyển đổi URL thực tế thành URL pattern
 const convertToUrlPattern = (url: string): string => {
-  // Thay thế các UUID trong URL bằng :id
   return url.replace(/\/[0-9a-fA-F-]{36}/, "/:id");
 };
 export const checkPermission = async (

@@ -67,4 +67,23 @@ export class RoleController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+  public static async updateStatus(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const { status } = req.body;
+    try {
+      const role = await Role.findByPk(id);
+      if (!role) {
+        res.status(404).json({ error: "Role not found" });
+        return;
+      }
+      await role.update({ status });
+      res.status(200).json({
+        message: "Role status updated successfully",
+        role,
+      });
+    } catch (error) {
+      console.error("Update role status error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }

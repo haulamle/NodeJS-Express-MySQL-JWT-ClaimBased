@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/User";
 import { Role } from "../models/Role";
 import { UserRole } from "../models/UserRole";
+import { Mailer } from "../utils/mailler";
 
 export class AuthController {
   public static async register(req: Request, res: Response): Promise<void> {
@@ -23,7 +24,6 @@ export class AuthController {
           roleId,
         });
       }
-
       res.status(201).json({
         message: "User registered successfully",
         userId: user.id,
@@ -87,6 +87,36 @@ export class AuthController {
       });
     } catch (error) {
       console.error("Login error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  public static async forgotPassword(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    try {
+      const { username, email } = req.body;
+
+      const user = await User.findOne({ where: { username } });
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      const newPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      user.password = hashedPassword;
+      await user.save();
+
+      await Mailer.sendForgotPasswordMail(email, newPassword);
+
+      res.status(200).json({
+        message: "New password has been sent to your email",
+      });
+    } catch (error) {
+      console.error("Forgot password error:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   }

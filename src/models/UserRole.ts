@@ -21,10 +21,7 @@ export class UserRole extends Model {
     field: "id",
   })
   declare id: string;
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+
   @ForeignKey(() => Role)
   @Column({
     type: DataType.UUID,

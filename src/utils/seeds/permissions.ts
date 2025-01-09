@@ -19,6 +19,11 @@ export const seedPermissions = async () => {
         apiMethod: "PUT",
       },
       {
+        action: "update",
+        apiEndpoint: "/api/users/status/:id",
+        apiMethod: "PUT",
+      },
+      {
         action: "delete",
         apiEndpoint: "/api/users/:id",
         apiMethod: "DELETE",
@@ -42,6 +47,11 @@ export const seedPermissions = async () => {
         action: "delete",
         apiEndpoint: "/api/products/:id",
         apiMethod: "DELETE",
+      },
+      {
+        action: "update",
+        apiEndpoint: "/api/permissions/status/:id/",
+        apiMethod: "PUT",
       },
     ];
 
